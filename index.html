@@ -1,247 +1,721 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Mental Math Mastery</title>
-  <script>
-    window.MathJax = { tex: { inlineMath: [['\\(', '\\)']] } };
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
-  <style>
-    :root {
-      --bg: #f5f5f5; --fg: #121212; --card-bg: #ffffff; --muted: #666666;
-      --border: #e0e0e0; --shadow: 0 4px 16px rgba(0, 0, 0, 0.08); --accent: #121212;
-      --accent-fg: #ffffff; --progress-bar-bg: #e0e0e0; --success: #008000;
-      --danger: #cc0000; --unlocked-bg: #e9e9e9; --next-unlock-bg: #dcdcdc;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #121212; --fg: #f5f5f5; --card-bg: #1e1e1e; --muted: #999999;
-        --border: #333333; --shadow: 0 4px 16px rgba(0, 0, 0, 0.2); --accent: #f5f5f5;
-        --accent-fg: #121212; --progress-bar-bg: #333333; --success: #39e639; --danger: #ff4d4d;
-        --unlocked-bg: #2a2a2a; --next-unlock-bg: #3c3c3c;
-      }
-    }
-    * { box-sizing: border-box; }
-    html { font-size: 16px; }
-    body {
-      margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background: var(--bg); color: var(--fg); display: flex; flex-direction: column; align-items: center;
-      justify-content: flex-start; min-height: 100vh; padding: 1rem; transition: background 0.3s, color 0.3s;
-    }
-    .container { width: 100%; max-width: 520px; }
-    .card {
-      background: var(--card-bg); border-radius: 1rem; box-shadow: var(--shadow);
-      padding: 1.25rem; animation: fadeIn 0.5s ease-out; margin-bottom: 1.5rem;
-      border: 1px solid var(--border); transition: background 0.3s, border 0.3s;
-    }
-    h1 { text-align: center; font-size: 1.6rem; margin: 0 0 1.5rem; }
-    .progress-area { margin-bottom: 1.5rem; }
-    .level-display { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; font-weight: 600; font-size: 1rem; }
-    #current-level { font-size: 1.1rem; color: var(--accent); }
-    .xp-bar-container { height: 12px; background: var(--progress-bar-bg); border-radius: 6px; overflow: hidden; }
-    #xp-bar { width: 0%; height: 100%; background: var(--accent); transition: width 0.4s ease-out; }
-    #xp-text { text-align: right; font-size: 0.85rem; color: var(--muted); }
-    #questionBox { min-height: 120px; border-radius: 0.75rem; background: var(--bg); display: flex; justify-content: center; align-items: center; padding: 1rem; margin-bottom: 1.5rem; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
-    #question { font-size: 1.8rem; text-align: center; }
-    .controls { display: flex; flex-direction: column; gap: 0.75rem; }
-    input[type="number"] { width: 100%; padding: 0.8rem 1rem; border-radius: 0.5rem; border: 1px solid var(--border); font-size: 1.1rem; background: var(--card-bg); color: var(--fg); -moz-appearance: textfield; transition: border-color 0.2s, box-shadow 0.2s; }
-    input[type="number"]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--unlocked-bg); outline: none; }
-    button.btn { width: 100%; background: var(--accent); color: var(--accent-fg); border: none; border-radius: 0.5rem; padding: 0.8rem 1.25rem; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s, transform 0.1s; }
-    button.btn:active { transform: scale(0.98); }
-    button.btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .feedback { margin-top: 1rem; text-align: center; min-height: 2.5rem; font-weight: bold; font-size: 1.1rem; display: flex; justify-content: center; align-items: center; transition: all 0.3s ease; }
-    .stats { display: flex; justify-content: space-around; margin-top: 1rem; font-size: 1rem; color: var(--muted); border-top: 1px solid var(--border); padding-top: 1rem; text-align: center; }
-    .stat-item span { display: block; font-weight: 600; font-size: 1.2rem; color: var(--fg); }
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Mental Math Mastery</title>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)']]
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+    <style>
+        :root {
+            --bg: #f5f5f5;
+            --fg: #121212;
+            --card-bg: #ffffff;
+            --muted: #666666;
+            --border: #e0e0e0;
+            --shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            --accent: #121212;
+            --accent-fg: #ffffff;
+            --progress-bar-bg: #e0e0e0;
+            --success: #008000;
+            --danger: #cc0000;
+            --unlocked-bg: #e9e9e9;
+            --next-unlock-bg: #dcdcdc;
+        }
 
-    /* --- UI UPDATE: Collapsible Progression Card Styles --- */
-    .progression-guide { padding: 0; }
-    .progression-header { padding: 1.25rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-    .progression-header h4 { margin: 0; font-size: 1.1rem; }
-    .progression-header-info { text-align: right; }
-    .progression-header-info span { font-size: 0.8rem; color: var(--muted); display: block; }
-    .progression-header-info strong { font-size: 0.9rem; }
-    .progression-guide ul { list-style: none; padding: 0 1.25rem 1.25rem; margin: 0; border-top: 1px solid var(--border); display: none; }
-    .progression-guide.active ul { display: block; }
-    .progression-guide li { padding: 0.6rem 0.8rem; border-radius: 0.5rem; margin-bottom: 0.5rem; display: flex; align-items: center; }
-    .progression-guide li.unlocked { background-color: var(--unlocked-bg); }
-    .progression-guide li.next-unlock { background-color: var(--next-unlock-bg); }
-    .progression-guide strong { color: var(--fg); min-width: 80px; }
-    .progression-guide span { font-size: 0.9rem; color: var(--muted); }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #121212;
+                --fg: #f5f5f5;
+                --card-bg: #1e1e1e;
+                --muted: #999999;
+                --border: #333333;
+                --shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+                --accent: #f5f5f5;
+                --accent-fg: #121212;
+                --progress-bar-bg: #333333;
+                --success: #39e639;
+                --danger: #ff4d4d;
+                --unlocked-bg: #2a2a2a;
+                --next-unlock-bg: #3c3c3c;
+            }
+        }
 
-    @media (min-width: 420px) {
-      .controls { flex-direction: row; }
-      button.btn { width: auto; }
-      input[type="number"] { width: auto; flex: 1; }
-    }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-  </style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            padding: 1rem;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 520px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 1rem;
+            box-shadow: var(--shadow);
+            padding: 1.25rem;
+            animation: fadeIn 0.5s ease-out;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+            transition: background 0.3s, border 0.3s;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.6rem;
+            margin: 0 0 1.5rem;
+        }
+
+        .progress-area {
+            margin-bottom: 1.5rem;
+        }
+
+        .level-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        #current-level {
+            font-size: 1.1rem;
+            color: var(--accent);
+        }
+
+        .xp-bar-container {
+            height: 12px;
+            background: var(--progress-bar-bg);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        #xp-bar {
+            width: 0%;
+            height: 100%;
+            background: var(--accent);
+            transition: width 0.4s ease-out;
+        }
+
+        #xp-text {
+            text-align: right;
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+
+        #questionBox {
+            min-height: 120px;
+            border-radius: 0.75rem;
+            background: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        #question {
+            font-size: 1.8rem;
+            text-align: center;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border);
+            font-size: 1.1rem;
+            background: var(--card-bg);
+            color: var(--fg);
+            -moz-appearance: textfield;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input[type="number"]:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--unlocked-bg);
+            outline: none;
+        }
+
+        button.btn {
+            width: 100%;
+            background: var(--accent);
+            color: var(--accent-fg);
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.8rem 1.25rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+
+        button.btn:active {
+            transform: scale(0.98);
+        }
+
+        button.btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .feedback {
+            margin-top: 1rem;
+            text-align: center;
+            min-height: 2.5rem;
+            font-weight: bold;
+            font-size: 1.1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 1rem;
+            font-size: 1rem;
+            color: var(--muted);
+            border-top: 1px solid var(--border);
+            padding-top: 1rem;
+            text-align: center;
+        }
+
+        .stat-item span {
+            display: block;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: var(--fg);
+        }
+
+        .progression-guide {
+            padding: 0;
+        }
+
+        .progression-header {
+            padding: 1.25rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .progression-header h4 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .progression-header-info {
+            text-align: right;
+        }
+
+        .progression-header-info span {
+            font-size: 0.8rem;
+            color: var(--muted);
+            display: block;
+        }
+
+        .progression-header-info strong {
+            font-size: 0.9rem;
+        }
+
+        .progression-guide ul {
+            list-style: none;
+            padding: 0 1.25rem 1.25rem;
+            margin: 0;
+            border-top: 1px solid var(--border);
+            display: none;
+        }
+
+        .progression-guide.active ul {
+            display: block;
+        }
+
+        .progression-guide li {
+            padding: 0.6rem 0.8rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .progression-guide li.unlocked {
+            background-color: var(--unlocked-bg);
+        }
+
+        .progression-guide li.next-unlock {
+            background-color: var(--next-unlock-bg);
+        }
+
+        .progression-guide strong {
+            color: var(--fg);
+            min-width: 80px;
+        }
+
+        .progression-guide span {
+            font-size: 0.9rem;
+            color: var(--muted);
+        }
+
+        @media (min-width: 420px) {
+            .controls {
+                flex-direction: row;
+            }
+            button.btn {
+                width: auto;
+            }
+            input[type="number"] {
+                width: auto;
+                flex: 1;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-    <div class="card">
-      <h1>Mental Math Mastery</h1>
-      <div class="progress-area">
-        <div class="level-display"><span>Level <span id="current-level">1</span></span><span id="streak"></span></div>
-        <div class="xp-bar-container"><div id="xp-bar"></div></div>
-        <div id="xp-text">0 / 100 XP</div>
-      </div>
-      <div id="questionBox"><div id="question"></div></div>
-      <div class="controls">
-        <input id="answer" type="number" placeholder="Your answer..." autocomplete="off" step="any" />
-        <button id="check" class="btn">Check</button>
-      </div>
-      <div class="feedback" id="feedback"></div>
-      <div class="stats">
-        <!-- UI UPDATE: Replaced "Avg Time" with "Accuracy" -->
-        <div class="stat-item">Accuracy <span id="accuracy">-</span></div>
-        <div class="stat-item">Correct <span id="total-correct">-</span></div>
-      </div>
-    </div>
-    <!-- UI UPDATE: Collapsible Card HTML Structure -->
-    <div class="card progression-guide" id="progression-card">
-        <div class="progression-header" id="progression-header">
-            <h4>Level Progression</h4>
-            <div class="progression-header-info">
-                <span>Next Unlock</span>
-                <strong id="next-unlock-text">Basic Skills</strong>
+    <div class="container">
+        <div class="card">
+            <h1>Mental Math Mastery</h1>
+            <div class="progress-area">
+                <div class="level-display"><span>Level <span id="current-level">1</span></span><span id="streak"></span></div>
+                <div class="xp-bar-container">
+                    <div id="xp-bar"></div>
+                </div>
+                <div id="xp-text">0 / 100 XP</div>
+            </div>
+            <div id="questionBox">
+                <div id="question"></div>
+            </div>
+            <div class="controls">
+                <input id="answer" type="number" placeholder="Your answer..." autocomplete="off" step="any" />
+                <button id="check" class="btn">Check</button>
+            </div>
+            <div class="feedback" id="feedback"></div>
+            <div class="stats">
+                <div class="stat-item">Accuracy <span id="accuracy">-</span></div>
+                <div class="stat-item">Correct <span id="total-correct">-</span></div>
             </div>
         </div>
-        <ul id="progression-list"></ul>
+        <div class="card progression-guide" id="progression-card">
+            <div class="progression-header" id="progression-header">
+                <h4>Level Progression</h4>
+                <div class="progression-header-info">
+                    <span>Next Unlock</span>
+                    <strong id="next-unlock-text">Basic Skills</strong>
+                </div>
+            </div>
+            <ul id="progression-list"></ul>
+        </div>
     </div>
-</div>
+    <script>
+        const elements = {
+            level: document.getElementById('current-level'),
+            streak: document.getElementById('streak'),
+            xpBar: document.getElementById('xp-bar'),
+            xpText: document.getElementById('xp-text'),
+            question: document.getElementById('question'),
+            answer: document.getElementById('answer'),
+            checkBtn: document.getElementById('check'),
+            feedback: document.getElementById('feedback'),
+            totalCorrect: document.getElementById('total-correct'),
+            progressionList: document.getElementById('progression-list'),
+            progressionCard: document.getElementById('progression-card'),
+            progressionHeader: document.getElementById('progression-header'),
+            nextUnlockText: document.getElementById('next-unlock-text'),
+            accuracy: document.getElementById('accuracy')
+        };
 
-<script>
-    const elements = {
-        level: document.getElementById('current-level'), streak: document.getElementById('streak'), xpBar: document.getElementById('xp-bar'),
-        xpText: document.getElementById('xp-text'), question: document.getElementById('question'), answer: document.getElementById('answer'),
-        checkBtn: document.getElementById('check'), feedback: document.getElementById('feedback'), totalCorrect: document.getElementById('total-correct'),
-        progressionList: document.getElementById('progression-list'), progressionCard: document.getElementById('progression-card'),
-        progressionHeader: document.getElementById('progression-header'), nextUnlockText: document.getElementById('next-unlock-text'),
-        accuracy: document.getElementById('accuracy') // UI UPDATE
-    };
-    
-    // Default state for a new user
-    const getInitialState = () => ({
-      level: 1, xp: 0, streak: 0, totalCorrect: 0, totalAnswered: 0, // Added totalAnswered for accuracy
-      currentQuestion: { latex: '', value: 0 }, questionStartTime: 0, isChecking: false
-    });
-    let state = getInitialState();
-
-    const STORAGE_KEY = 'mentalMathMasteryState';
-    const levelsConfig = [
-        { xpToNext: 100,  desc: "Basic Multiplication & Squares (1-10)" }, { xpToNext: 150,  desc: "Introduction to Cubes (1-10)" },
-        { xpToNext: 200,  desc: "Advanced Multiplication Tables (11-20)" }, { xpToNext: 250,  desc: "Intermediate Squares (11-20)" },
-        { xpToNext: 300,  desc: "Basic Square Roots" }, { xpToNext: 400,  desc: "Two Operations: (+, -, x, ²)" },
-        { xpToNext: 450,  desc: "Advanced Cubes (11-20)" }, { xpToNext: 500,  desc: "Introduction to Cube Roots" },
-        { xpToNext: 600,  desc: "Fraction to Decimal Conversion" }, { xpToNext: 750,  desc: "Complex Two Operations" },
-        { xpToNext: 900, desc: "Three Operation Problems" }, { xpToNext: 1000, desc: "Basic Percentages (10%, 25%, 50%)" },
-        { xpToNext: 1100, desc: "Chains with Simple Division" }, { xpToNext: 1200, desc: "Larger Number Addition/Subtraction" },
-        { xpToNext: 1300, desc: "Advanced Percentages (5%, 20%, 75%)" }, { xpToNext: 1400, desc: "Financial Math: Discounts" },
-        { xpToNext: 1500, desc: "Advanced Fractions (a/b of C)" }, { xpToNext: 1600, desc: "Chains with all Operators" },
-        { xpToNext: 1750, desc: "Financial Math: Sales Tax" }, { xpToNext: 2000, desc: "Mastery Gauntlet: 2-4 Ops" },
-    ];
-    
-    // --- *** BUG FIX: Corrected and Robust State Management *** ---
-    function loadState() {
-        try {
-            const savedStateJSON = localStorage.getItem(STORAGE_KEY);
-            if (savedStateJSON) {
-                const loadedState = JSON.parse(savedStateJSON);
-                // Combine loaded state with initial state to ensure all properties exist
-                state = { ...getInitialState(), ...loadedState };
-            }
-        } catch (error) {
-            console.error("Failed to load state from localStorage:", error);
-            state = getInitialState(); // Reset if there's an error
-        }
-    }
-    function saveState() {
-        try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-        } catch (error) {
-            console.error("Failed to save state to localStorage:", error);
-        }
-    }
-
-    const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-    const choice = (arr) => arr[randInt(0, arr.length - 1)];
-    const fround = (num) => parseFloat(num.toFixed(4));
-    
-    function handleCheckAnswer() {
-        if (state.isChecking) return; state.isChecking = true; elements.checkBtn.disabled = true;
-        const userAnswer = parseFloat(elements.answer.value); if (isNaN(userAnswer)) { state.isChecking = false; elements.checkBtn.disabled = false; return; }
-        
-        state.totalAnswered++; // Increment on every answer
-        const isCorrect = Math.abs(userAnswer - state.currentQuestion.value) < 0.001;
-        
-        if (isCorrect) {
-            state.streak++; state.totalCorrect++; 
-            const timeTaken = (Date.now() - state.questionStartTime) / 1000;
-            const score = calculateXP(timeTaken); addXP(score.totalXp);
-            elements.feedback.innerHTML = `Correct! <span style="color:var(--success); margin-left:8px;">+${score.baseXp} XP ${score.streakBonus > 0 ? `(+${score.streakBonus} 🔥)` : ''}</span>`;
-            elements.feedback.style.color = 'var(--success)';
-        } else {
-            state.streak = 0; elements.feedback.innerHTML = `Incorrect. Answer: <span style="color:var(--danger); margin-left:8px;">${state.currentQuestion.value}</span>`;
-            elements.feedback.style.color = 'var(--danger)';
-        }
-        updateUI(); saveState(); setTimeout(prepareNextQuestion, 1800);
-    }
-    
-    function updateUI() {
-        const levelConf = levelsConfig[state.level - 1] || levelsConfig[levelsConfig.length - 1];
-        const nextUnlockConf = levelsConfig[state.level] || levelsConfig[levelsConfig.length-1];
-        const xpToNext = levelConf.xpToNext;
-
-        elements.level.textContent = state.level;
-        elements.xpText.textContent = `${state.xp} / ${xpToNext} XP`;
-        elements.xpBar.style.width = `${Math.min(100, (state.xp / xpToNext) * 100)}%`;
-        elements.streak.textContent = state.streak > 1 ? `🔥 ${state.streak} Streak` : '';
-        elements.totalCorrect.textContent = state.totalCorrect;
-
-        // UI UPDATE: Calculate and display accuracy
-        if (state.totalAnswered > 0) {
-            const accuracyPercentage = (state.totalCorrect / state.totalAnswered * 100).toFixed(1);
-            elements.accuracy.textContent = `${accuracyPercentage}%`;
-        } else {
-            elements.accuracy.textContent = '-';
-        }
-        
-        // UI UPDATE: Populate collapsible card
-        elements.nextUnlockText.textContent = `Lvl ${state.level + 1}: ${nextUnlockConf.desc}`;
-        elements.progressionList.innerHTML = '';
-        levelsConfig.forEach((lvl, index) => {
-            const li = document.createElement('li'); const currentLevelIndex = state.level - 1;
-            if (index < currentLevelIndex) li.className = 'unlocked'; else if (index === currentLevelIndex) li.className = 'next-unlock';
-            li.innerHTML = `<strong>Level ${index + 1}</strong> <span>${lvl.desc}</span>`;
-            elements.progressionList.appendChild(li);
+        const getInitialState = () => ({
+            level: 1,
+            xp: 0,
+            streak: 0,
+            totalCorrect: 0,
+            totalAnswered: 0,
+            currentQuestion: {
+                latex: '',
+                value: 0
+            },
+            lastQuestionLatex: '', // --- MODIFICATION: Added to prevent repeat questions
+            questionStartTime: 0,
+            isChecking: false
         });
-    }
 
-    // --- OTHER CORE LOGIC (UNCHANGED) ---
-    function prepareNextQuestion() { elements.feedback.textContent = ''; elements.feedback.style.transform = "scale(1)"; elements.answer.value = ''; generateQuestion(); elements.answer.focus(); state.isChecking = false; elements.checkBtn.disabled = false; }
-    function calculateXP(timeSeconds) { const base = Math.max(5, 20 - Math.floor(timeSeconds * 1.5)); const streakBonus = Math.min(25, Math.floor(state.streak * 1.5)); return { baseXp: base, streakBonus, totalXp: base + streakBonus }; }
-    function addXP(amount) { state.xp += amount; const requiredXp = (levelsConfig[state.level - 1] || levelsConfig[levelsConfig.length-1]).xpToNext; if (state.xp >= requiredXp) { state.level++; state.xp -= requiredXp; elements.feedback.innerHTML = `🎉 LEVEL UP! You are now Level ${state.level}! 🎉`; elements.feedback.style.transform = "scale(1.1)"; } }
-    function getAvailableSkills() { const lvl = state.level; const skills = ['tables_basic', 'squares_basic']; if (lvl >= 2) skills.push('cubes_basic'); if (lvl >= 3) skills.push('tables_adv'); if (lvl >= 4) skills.push('squares_adv'); if (lvl >= 5) skills.push('roots_sq'); if (lvl >= 7) skills.push('cubes_adv'); if (lvl >= 8) skills.push('roots_cube'); if (lvl >= 9) skills.push('fractions_basic'); if (lvl >= 12) skills.push('percent_basic'); if (lvl >= 13) skills.push('division'); if (lvl >= 14) skills.push('large_arith'); if (lvl >= 15) skills.push('percent_adv'); if (lvl >= 16) skills.push('financial_discount'); if (lvl >= 17) skills.push('fractions_adv'); if (lvl >= 19) skills.push('financial_tax'); return skills; }
-    function generateQuestion() { const lvl = state.level; let q; const skills = getAvailableSkills(); if (lvl < 6) q = generateSingleOp(choice(skills)); else if (lvl < 11) q = generateMultiOp(2, skills.filter(s => !s.includes('large') && !s.includes('financial'))); else if (lvl === 11) q = generateMultiOp(randInt(2, 3), skills.filter(s => !s.includes('large') && !s.includes('financial'))); else { const singleOpChance = 0.3; if (Math.random() < singleOpChance) q = generateSingleOp(choice(skills)); else q = generateMultiOp(randInt(2, lvl >= 20 ? 4 : 3), skills.filter(s => !s.includes('large'))); } state.currentQuestion = q; state.questionStartTime = Date.now(); elements.question.innerHTML = `\\(${q.latex}\\)`; if (window.MathJax) MathJax.typesetPromise([elements.question]).catch(console.error); }
-    function generateSingleOp(type) { let latex, value, a, b, c; switch (type) { case 'tables_basic': a = randInt(2, 10); b = randInt(2, 10); latex = `${a} \\times ${b}`; value = a * b; break; case 'squares_basic': a = randInt(1, 10); latex = `${a}^{2}`; value = a * a; break; case 'cubes_basic': a = randInt(1, 10); latex = `${a}^{3}`; value = a * a * a; break; case 'tables_adv': a = randInt(11, 20); b = randInt(2, 20); latex = `${a} \\times ${b}`; value = a * b; break; case 'squares_adv': a = randInt(11, 20); latex = `${a}^{2}`; value = a * a; break; case 'roots_sq': a = randInt(2, 20); latex = `\\sqrt{${a*a}}`; value = a; break; case 'cubes_adv': a = randInt(11, 20); latex = `${a}^{3}`; value = a * a * a; break; case 'roots_cube': a = randInt(2, 15); latex = `\\sqrt[3]{${a*a*a}}`; value = a; break; case 'fractions_basic': a = randInt(2, 16); latex = `\\frac{1}{${a}}`; value = fround(1/a); break; case 'percent_basic': a = choice([10, 25, 50]); b = randInt(2, 10) * 10; latex = `${a}\\% \\text{ of } ${b}`; value = b * (a/100); break; case 'percent_adv': a = choice([5, 20, 75, 15, 40]); b = randInt(2, 12) * choice([5, 10]); latex = `${a}\\% \\text{ of } ${b}`; value = fround(b * (a/100)); break; case 'division': b = randInt(2, 20); value = randInt(2, 20); a = b * value; latex = `\\frac{${a}}{${b}}`; break; case 'large_arith': a = randInt(100, 900); b = randInt(100, 900); if (Math.random() > 0.5) { latex=`${a+b}-${a}`; value=b } else {latex=`${a}+${b}`; value=a+b;} break; case 'financial_discount': a = choice([10, 20, 25, 50]); b = randInt(5, 40) * 10; latex = `${a}\\% \\text{ discount on } \\$${b}`; value = b * (1 - a/100); break; case 'financial_tax': a = choice([5, 7, 8, 10]); b = randInt(5, 50) * 10; latex = `${a}\\% \\text{ tax on } \\$${b}`; value = fround(b * (1 + a/100)); break; case 'fractions_adv': b = choice([2,3,4,5,10]); a = randInt(1, b-1); c = randInt(2,10)*b; latex = `\\frac{${a}}{${b}} \\text{ of } ${c}`; value = (a/b)*c; break; default: return generateSingleOp('tables_basic'); } return { latex, value }; }
-    function generateMultiOp(numOps, skills) { let parts = [], latexParts = []; for (let i = 0; i < numOps; i++) { const opType = choice(skills.filter(s => !['fractions_basic', 'large_arith'].includes(s))); const p = generateSingleOp(opType); parts.push(p.value); latexParts.push(`(${p.latex})`); } let finalValue = parts[0]; let finalLatex = latexParts[0]; for (let i = 1; i < parts.length; i++) { const op = choice(['+', '-']); finalValue += (op === '+' ? parts[i] : -parts[i]); finalLatex += ` ${op} ${latexParts[i]}`; } return { latex: finalLatex, value: fround(finalValue) }; }
-    
-    // --- EVENT LISTENERS ---
-    elements.checkBtn.addEventListener('mousedown', (e) => e.preventDefault());
-    elements.checkBtn.addEventListener('click', handleCheckAnswer);
-    elements.answer.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleCheckAnswer(); });
-    elements.progressionHeader.addEventListener('click', () => {
-        elements.progressionCard.classList.toggle('active');
-    });
+        let state = getInitialState();
 
-    // --- INITIALIZATION ---
-    document.addEventListener('DOMContentLoaded', () => { 
-        loadState(); // Load progress FIRST
-        updateUI();   // THEN update the screen with the loaded data
-        prepareNextQuestion(); // FINALLY start the game logic
-    });
-</script>
+        const STORAGE_KEY = 'mentalMathMasteryState';
+
+        const levelsConfig = [{
+            xpToNext: 100,
+            desc: "Basic Multiplication & Squares (1-10)"
+        }, {
+            xpToNext: 150,
+            desc: "Introduction to Cubes (1-10)"
+        }, {
+            xpToNext: 200,
+            desc: "Advanced Multiplication Tables (11-20)"
+        }, {
+            xpToNext: 250,
+            desc: "Intermediate Squares (11-20)"
+        }, {
+            xpToNext: 300,
+            desc: "Basic Square Roots"
+        }, {
+            xpToNext: 400,
+            desc: "Two Operations: (+, -, x, ²)"
+        }, {
+            xpToNext: 450,
+            desc: "Advanced Cubes (11-20)"
+        }, {
+            xpToNext: 500,
+            desc: "Introduction to Cube Roots"
+        }, {
+            xpToNext: 600,
+            desc: "Fraction to Decimal Conversion"
+        }, {
+            xpToNext: 750,
+            desc: "Complex Two Operations"
+        }, {
+            xpToNext: 900,
+            desc: "Three Operation Problems"
+        }, {
+            xpToNext: 1000,
+            desc: "Basic Percentages (10%, 25%, 50%)"
+        }, {
+            xpToNext: 1100,
+            desc: "Chains with Simple Division"
+        }, {
+            xpToNext: 1200,
+            desc: "Larger Number Addition/Subtraction"
+        }, {
+            xpToNext: 1300,
+            desc: "Advanced Percentages (5%, 20%, 75%)"
+        }, {
+            xpToNext: 1400,
+            desc: "Financial Math: Discounts"
+        }, {
+            xpToNext: 1500,
+            desc: "Advanced Fractions (a/b of C)"
+        }, {
+            xpToNext: 1600,
+            desc: "Chains with all Operators"
+        }, {
+            xpToNext: 1750,
+            desc: "Financial Math: Sales Tax"
+        }, {
+            xpToNext: 2000,
+            desc: "Mastery Gauntlet: 2-4 Ops"
+        }, ];
+
+        // --- EXPLANATION: State Management ---
+        // This function correctly loads your progress. It checks localStorage for saved data.
+        // The line `state = { ...getInitialState(), ...loadedState };` is crucial. It merges
+        // your saved data with the default new-user data. This prevents the app from crashing
+        // if you add new features (and new state properties) in the future.
+        function loadState() {
+            try {
+                const savedStateJSON = localStorage.getItem(STORAGE_KEY);
+                if (savedStateJSON) {
+                    const loadedState = JSON.parse(savedStateJSON);
+                    state = { ...getInitialState(),
+                        ...loadedState
+                    };
+                }
+            } catch (error) {
+                console.error("Failed to load state from localStorage:", error);
+                state = getInitialState();
+            }
+        }
+
+        // This function saves your progress to the browser's localStorage after every answer.
+        function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            } catch (error) {
+                console.error("Failed to save state to localStorage:", error);
+            }
+        }
+
+        const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+        const choice = (arr) => arr[randInt(0, arr.length - 1)];
+        const fround = (num) => parseFloat(num.toFixed(4));
+
+        function handleCheckAnswer() {
+            if (state.isChecking) return;
+            state.isChecking = true;
+            elements.checkBtn.disabled = true;
+
+            const userAnswer = parseFloat(elements.answer.value);
+            if (isNaN(userAnswer)) {
+                state.isChecking = false;
+                elements.checkBtn.disabled = false;
+                return;
+            }
+
+            state.totalAnswered++;
+            const isCorrect = Math.abs(userAnswer - state.currentQuestion.value) < 0.001;
+
+            if (isCorrect) {
+                state.streak++;
+                state.totalCorrect++;
+                const timeTaken = (Date.now() - state.questionStartTime) / 1000;
+                const score = calculateXP(timeTaken);
+                addXP(score.totalXp);
+                elements.feedback.innerHTML = `Correct! <span style="color:var(--success); margin-left:8px;">+${score.baseXp} XP ${score.streakBonus > 0 ? `(+${score.streakBonus} 🔥)` : ''}</span>`;
+                elements.feedback.style.color = 'var(--success)';
+            } else {
+                state.streak = 0;
+                elements.feedback.innerHTML = `Incorrect. Answer: <span style="color:var(--danger); margin-left:8px;">${state.currentQuestion.value}</span>`;
+                elements.feedback.style.color = 'var(--danger)';
+            }
+
+            updateUI();
+            saveState(); // Progress is saved after every single answer.
+            setTimeout(prepareNextQuestion, 1800);
+        }
+
+        function updateUI() {
+            const levelConf = levelsConfig[state.level - 1] || levelsConfig[levelsConfig.length - 1];
+            const nextUnlockConf = levelsConfig[state.level] || levelsConfig[levelsConfig.length - 1];
+            const xpToNext = levelConf.xpToNext;
+
+            elements.level.textContent = state.level;
+            elements.xpText.textContent = `${state.xp} / ${xpToNext} XP`;
+            elements.xpBar.style.width = `${Math.min(100, (state.xp / xpToNext) * 100)}%`;
+            elements.streak.textContent = state.streak > 1 ? `🔥 ${state.streak} Streak` : '';
+            elements.totalCorrect.textContent = state.totalCorrect;
+
+            if (state.totalAnswered > 0) {
+                const accuracyPercentage = (state.totalCorrect / state.totalAnswered * 100).toFixed(1);
+                elements.accuracy.textContent = `${accuracyPercentage}%`;
+            } else {
+                elements.accuracy.textContent = '-';
+            }
+
+            elements.nextUnlockText.textContent = `Lvl ${state.level + 1}: ${nextUnlockConf.desc}`;
+            elements.progressionList.innerHTML = '';
+            levelsConfig.forEach((lvl, index) => {
+                const li = document.createElement('li');
+                const currentLevelIndex = state.level - 1;
+                if (index < currentLevelIndex) li.className = 'unlocked';
+                else if (index === currentLevelIndex) li.className = 'next-unlock';
+                li.innerHTML = `<strong>Level ${index + 1}</strong> <span>${lvl.desc}</span>`;
+                elements.progressionList.appendChild(li);
+            });
+        }
+
+        function prepareNextQuestion() {
+            elements.feedback.textContent = '';
+            elements.feedback.style.transform = "scale(1)";
+            elements.answer.value = '';
+            generateQuestion();
+            elements.answer.focus();
+            state.isChecking = false;
+            elements.checkBtn.disabled = false;
+        }
+
+        function calculateXP(timeSeconds) {
+            const base = Math.max(5, 20 - Math.floor(timeSeconds * 1.5));
+            const streakBonus = Math.min(25, Math.floor(state.streak * 1.5));
+            return {
+                baseXp: base,
+                streakBonus,
+                totalXp: base + streakBonus
+            };
+        }
+
+        function addXP(amount) {
+            state.xp += amount;
+            const requiredXp = (levelsConfig[state.level - 1] || levelsConfig[levelsConfig.length - 1]).xpToNext;
+            if (state.xp >= requiredXp) {
+                state.level++;
+                state.xp -= requiredXp;
+                elements.feedback.innerHTML = `🎉 LEVEL UP! You are now Level ${state.level}! 🎉`;
+                elements.feedback.style.transform = "scale(1.1)";
+            }
+        }
+        
+        const SKILL_UNLOCKS = {
+            tables_basic: 1, squares_basic: 1, cubes_basic: 2, tables_adv: 3, squares_adv: 4,
+            roots_sq: 5, cubes_adv: 7, roots_cube: 8, fractions_basic: 9, percent_basic: 12,
+            division: 13, large_arith: 14, percent_adv: 15, financial_discount: 16,
+            fractions_adv: 17, financial_tax: 19
+        };
+        
+        function getAvailableSkills() {
+            const skills = [];
+            for (const skill in SKILL_UNLOCKS) {
+                if (state.level >= SKILL_UNLOCKS[skill]) {
+                    skills.push(skill);
+                }
+            }
+            return skills;
+        }
+
+        // --- MODIFICATION: Weighted Difficulty Selection ---
+        // This new function makes the question difficulty more consistent.
+        // It gives a higher chance of picking skills that you've unlocked more recently.
+        function getWeightedSkill(skills) {
+            const weightedPool = [];
+            skills.forEach(skill => {
+                const levelUnlocked = SKILL_UNLOCKS[skill];
+                const weight = Math.max(1, Math.floor(levelUnlocked / 2)); // Skills from higher levels get a higher weight
+                for (let i = 0; i < weight; i++) {
+                    weightedPool.push(skill);
+                }
+            });
+            // Heavily bias towards the 3 most recently unlocked skills
+            const recentSkills = skills.slice(-3);
+            recentSkills.forEach(skill => {
+                 for (let i = 0; i < 5; i++) { // Add recent skills 5 extra times
+                    weightedPool.push(skill);
+                }
+            });
+            return choice(weightedPool);
+        }
+
+        // --- MODIFICATION: Improved Question Generation ---
+        // This function now ensures you don't get a repeat question and uses the weighted
+        // system for more appropriate difficulty scaling.
+        function generateQuestion() {
+            const lvl = state.level;
+            let q;
+            const skills = getAvailableSkills();
+            
+            // Loop to ensure the new question is not the same as the last one.
+            do {
+                if (lvl < 6) {
+                    q = generateSingleOp(getWeightedSkill(skills));
+                } else if (lvl < 11) {
+                    q = generateMultiOp(2, skills.filter(s => !s.includes('large') && !s.includes('financial')));
+                } else if (lvl === 11) {
+                    q = generateMultiOp(randInt(2, 3), skills.filter(s => !s.includes('large') && !s.includes('financial')));
+                } else {
+                    const singleOpChance = 0.3;
+                    if (Math.random() < singleOpChance) {
+                        q = generateSingleOp(getWeightedSkill(skills));
+                    } else {
+                        q = generateMultiOp(randInt(2, lvl >= 20 ? 4 : 3), skills.filter(s => !s.includes('large')));
+                    }
+                }
+            } while (q.latex === state.lastQuestionLatex);
+
+            state.lastQuestionLatex = q.latex; // Store the new question
+            state.currentQuestion = q;
+            state.questionStartTime = Date.now();
+            elements.question.innerHTML = `\\(${q.latex}\\)`;
+            if (window.MathJax) MathJax.typesetPromise([elements.question]).catch(console.error);
+        }
+
+        function generateSingleOp(type) {
+            let latex, value, a, b, c;
+            switch (type) {
+                case 'tables_basic': a = randInt(2, 10); b = randInt(2, 10); latex = `${a} \\times ${b}`; value = a * b; break;
+                case 'squares_basic': a = randInt(1, 10); latex = `${a}^{2}`; value = a * a; break;
+                case 'cubes_basic': a = randInt(1, 10); latex = `${a}^{3}`; value = a * a * a; break;
+                case 'tables_adv': a = randInt(11, 20); b = randInt(2, 20); latex = `${a} \\times ${b}`; value = a * b; break;
+                case 'squares_adv': a = randInt(11, 20); latex = `${a}^{2}`; value = a * a; break;
+                case 'roots_sq': a = randInt(2, 20); latex = `\\sqrt{${a*a}}`; value = a; break;
+                case 'cubes_adv': a = randInt(11, 20); latex = `${a}^{3}`; value = a * a * a; break;
+                case 'roots_cube': a = randInt(2, 15); latex = `\\sqrt[3]{${a*a*a}}`; value = a; break;
+                case 'fractions_basic': a = randInt(2, 16); latex = `\\frac{1}{${a}}`; value = fround(1 / a); break;
+                case 'percent_basic': a = choice([10, 25, 50]); b = randInt(2, 10) * 10; latex = `${a}\\% \\text{ of } ${b}`; value = b * (a / 100); break;
+                case 'percent_adv': a = choice([5, 20, 75, 15, 40]); b = randInt(2, 12) * choice([5, 10]); latex = `${a}\\% \\text{ of } ${b}`; value = fround(b * (a / 100)); break;
+                case 'division': b = randInt(2, 20); value = randInt(2, 20); a = b * value; latex = `\\frac{${a}}{${b}}`; break;
+                case 'large_arith': a = randInt(100, 900); b = randInt(100, 900); if (Math.random() > 0.5) { latex = `${a+b}-${a}`; value = b } else { latex = `${a}+${b}`; value = a + b; } break;
+                case 'financial_discount': a = choice([10, 20, 25, 50]); b = randInt(5, 40) * 10; latex = `${a}\\% \\text{ discount on } \\$${b}`; value = b * (1 - a / 100); break;
+                case 'financial_tax': a = choice([5, 7, 8, 10]); b = randInt(5, 50) * 10; latex = `${a}\\% \\text{ tax on } \\$${b}`; value = fround(b * (1 + a / 100)); break;
+                case 'fractions_adv': b = choice([2, 3, 4, 5, 10]); a = randInt(1, b - 1); c = randInt(2, 10) * b; latex = `\\frac{${a}}{${b}} \\text{ of } ${c}`; value = (a / b) * c; break;
+                default: return generateSingleOp('tables_basic');
+            }
+            return {
+                latex,
+                value
+            };
+        }
+
+        function generateMultiOp(numOps, skills) {
+            let parts = [],
+                latexParts = [];
+            for (let i = 0; i < numOps; i++) {
+                // MODIFICATION: Using weighted skill choice for better difficulty
+                const opType = getWeightedSkill(skills.filter(s => !['fractions_basic', 'large_arith'].includes(s)));
+                const p = generateSingleOp(opType);
+                parts.push(p.value);
+                latexParts.push(`(${p.latex})`);
+            }
+            let finalValue = parts[0];
+            let finalLatex = latexParts[0];
+            for (let i = 1; i < parts.length; i++) {
+                const op = choice(['+', '-']);
+                finalValue += (op === '+' ? parts[i] : -parts[i]);
+                finalLatex += ` ${op} ${latexParts[i]}`;
+            }
+            return {
+                latex: finalLatex,
+                value: fround(finalValue)
+            };
+        }
+
+        // --- EVENT LISTENERS ---
+        elements.checkBtn.addEventListener('mousedown', (e) => e.preventDefault());
+        elements.checkBtn.addEventListener('click', handleCheckAnswer);
+        elements.answer.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') handleCheckAnswer();
+        });
+        elements.progressionHeader.addEventListener('click', () => {
+            elements.progressionCard.classList.toggle('active');
+        });
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            updateUI();
+            prepareNextQuestion();
+        });
+    </script>
 </body>
 </html>
