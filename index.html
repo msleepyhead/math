@@ -315,6 +315,49 @@
                 transform: translateY(0);
             }
         }
+
+        /* Add this to your existing <style> block */
+.install-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--card-bg);
+    border-top: 1px solid var(--border);
+    padding: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    z-index: 1000;
+    transform: translateY(100%);
+    transition: transform 0.3s ease-in-out;
+}
+
+.install-banner.visible {
+    transform: translateY(0);
+}
+
+.install-banner p {
+    margin: 0;
+    font-weight: 500;
+    flex-grow: 1;
+    text-align: center;
+}
+
+.install-banner .btn {
+    width: auto;
+    flex-shrink: 0;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 0 0.5rem;
+}
     </style>
 </head>
 <body>
@@ -719,7 +762,56 @@
             });
         });
     }
+
+    // --- PWA INSTALL BANNER LOGIC ---
+    const installBanner = document.getElementById('install-banner');
+    const installButton = document.getElementById('install-button');
+    const closeInstallBanner = document.getElementById('close-install-banner');
+    let deferredPrompt;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevent the default browser install prompt
+        e.preventDefault();
+        // Stash the event so it can be triggered later.
+        deferredPrompt = e;
+        // Show our custom banner
+        installBanner.hidden = false;
+        setTimeout(() => {
+            installBanner.classList.add('visible');
+        }, 100); // Small delay for the animation
+    });
+
+    installButton.addEventListener('click', async () => {
+        // Hide our banner
+        installBanner.classList.remove('visible');
+        // Show the browser's install prompt
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            // Wait for the user to respond to the prompt
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`User response to the install prompt: ${outcome}`);
+            // The prompt can only be used once, so we clear it
+            deferredPrompt = null;
+        }
+    });
+
+    closeInstallBanner.addEventListener('click', () => {
+        installBanner.classList.remove('visible');
+    });
+
+    // Detect if the app is installed
+    window.addEventListener('appinstalled', () => {
+      // Hide the install banner
+      installBanner.classList.remove('visible');
+      deferredPrompt = null;
+      console.log('PWA was installed');
+    });
 </script>
+    <div id="install-banner" class="install-banner" hidden>
+    <p>Get the full app experience!</p>
+    <button id="install-button" class="btn">Install</button>
+    <button id="close-install-banner" class="close-btn">&times;</button>
+</div>
     
 </body>
 </html>
