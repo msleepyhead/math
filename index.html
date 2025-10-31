@@ -379,7 +379,7 @@
                 latex: '',
                 value: 0
             },
-            lastQuestionLatex: '', // --- MODIFICATION: Added to prevent repeat questions
+            lastQuestionLatex: '',
             questionStartTime: 0,
             isChecking: false
         });
@@ -450,19 +450,18 @@
             desc: "Mastery Gauntlet: 2-4 Ops"
         }, ];
 
-        // --- EXPLANATION: State Management ---
-        // This function correctly loads your progress. It checks localStorage for saved data.
-        // The line `state = { ...getInitialState(), ...loadedState };` is crucial. It merges
-        // your saved data with the default new-user data. This prevents the app from crashing
-        // if you add new features (and new state properties) in the future.
+
         function loadState() {
             try {
                 const savedStateJSON = localStorage.getItem(STORAGE_KEY);
                 if (savedStateJSON) {
                     const loadedState = JSON.parse(savedStateJSON);
-                    state = { ...getInitialState(),
-                        ...loadedState
-                    };
+                    state = { ...getInitialState(), ...loadedState };
+
+                    // --- BUG FIX: Force reset transient UI state on load ---
+                    // This ensures that even if the app was closed mid-action,
+                    // it starts in a clean, interactive state. The button will now work.
+                    state.isChecking = false;
                 }
             } catch (error) {
                 console.error("Failed to load state from localStorage:", error);
@@ -470,7 +469,7 @@
             }
         }
 
-        // This function saves your progress to the browser's localStorage after every answer.
+
         function saveState() {
             try {
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -513,7 +512,7 @@
             }
 
             updateUI();
-            saveState(); // Progress is saved after every single answer.
+            saveState();
             setTimeout(prepareNextQuestion, 1800);
         }
 
@@ -595,37 +594,29 @@
             return skills;
         }
 
-        // --- MODIFICATION: Weighted Difficulty Selection ---
-        // This new function makes the question difficulty more consistent.
-        // It gives a higher chance of picking skills that you've unlocked more recently.
         function getWeightedSkill(skills) {
             const weightedPool = [];
             skills.forEach(skill => {
                 const levelUnlocked = SKILL_UNLOCKS[skill];
-                const weight = Math.max(1, Math.floor(levelUnlocked / 2)); // Skills from higher levels get a higher weight
+                const weight = Math.max(1, Math.floor(levelUnlocked / 2));
                 for (let i = 0; i < weight; i++) {
                     weightedPool.push(skill);
                 }
             });
-            // Heavily bias towards the 3 most recently unlocked skills
             const recentSkills = skills.slice(-3);
             recentSkills.forEach(skill => {
-                 for (let i = 0; i < 5; i++) { // Add recent skills 5 extra times
+                 for (let i = 0; i < 5; i++) {
                     weightedPool.push(skill);
                 }
             });
             return choice(weightedPool);
         }
 
-        // --- MODIFICATION: Improved Question Generation ---
-        // This function now ensures you don't get a repeat question and uses the weighted
-        // system for more appropriate difficulty scaling.
         function generateQuestion() {
             const lvl = state.level;
             let q;
             const skills = getAvailableSkills();
             
-            // Loop to ensure the new question is not the same as the last one.
             do {
                 if (lvl < 6) {
                     q = generateSingleOp(getWeightedSkill(skills));
@@ -643,7 +634,7 @@
                 }
             } while (q.latex === state.lastQuestionLatex);
 
-            state.lastQuestionLatex = q.latex; // Store the new question
+            state.lastQuestionLatex = q.latex;
             state.currentQuestion = q;
             state.questionStartTime = Date.now();
             elements.question.innerHTML = `\\(${q.latex}\\)`;
@@ -681,7 +672,6 @@
             let parts = [],
                 latexParts = [];
             for (let i = 0; i < numOps; i++) {
-                // MODIFICATION: Using weighted skill choice for better difficulty
                 const opType = getWeightedSkill(skills.filter(s => !['fractions_basic', 'large_arith'].includes(s)));
                 const p = generateSingleOp(opType);
                 parts.push(p.value);
